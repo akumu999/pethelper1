@@ -2,6 +2,7 @@ package com.example.pethelper.Navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
@@ -22,9 +23,8 @@ fun SetNavController(controller: NavHostController) {
         }
 
         composable(NavScreens.RegisterScreen.route){
-            val controller = rememberNavController()
-            val authViewModel = viewModel<AuthViewModel>()
-            RegisterScreen(viewModel = authViewModel, navController = controller)
+            val authViewModel = viewModel<RegisterViewModel>()
+            RegisterScreen(viewModel = authViewModel, controller)
         }
 
         composable(NavScreens.MainScreen.route){

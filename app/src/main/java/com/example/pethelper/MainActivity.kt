@@ -31,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -41,7 +43,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.sql.Date
-
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 
 
 class MainActivity : ComponentActivity() {
@@ -182,73 +185,70 @@ fun LoginScreen(
 
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel,
-    navController: NavController
+    viewModel: RegisterViewModel,
+    controller: NavController
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val email by viewModel.email.observeAsState("")
+    val password by viewModel.password.observeAsState("")
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-
-        TextField(
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Register Screen")
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            label = { Text(text = "Email") },
+            onValueChange = { viewModel.onEmailChange(it) },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
+        OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
-            label = { Text(text = "Password") },
+            onValueChange = { viewModel.onPasswordChange(it) },
+            label = { Text("Password") },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
-            onClick = {
-                viewModel.registerUser(email, password)
-            },
+            onClick = { viewModel.register(controller) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Register")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(
-            onClick = { navController.navigate("login") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Already have an account? Login")
+            Text("Register")
         }
     }
 }
 
-class AuthViewModel : ViewModel() {
-    private val auth = Firebase.auth
+class RegisterViewModel : ViewModel() {
+    private val _email = MutableLiveData("")
+    val email: LiveData<String> = _email
 
-    fun registerUser(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "Registration successful")
-                } else {
-                    Log.w(TAG, "Registration failed", task.exception)
-                }
-            }
+    private val _password = MutableLiveData("")
+    val password: LiveData<String> = _password
+
+    fun onEmailChange(email: String) {
+        _email.value = email
     }
 
-    companion object {
-        private const val TAG = "AuthViewModel"
+    fun onPasswordChange(password: String) {
+        _password.value = password
+    }
+
+    fun register(controller: NavController) {
+        val email = email.value ?: return
+        val password = password.value ?: return
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    controller.navigate(NavScreens.MainScreen.route)
+                } else {
+                    // Handle registration error
+                }
+            }
     }
 }
 

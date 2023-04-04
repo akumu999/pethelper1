@@ -65,6 +65,10 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_ui_version"
+    implementation 'com.google.firebase:firebase-core:20.0.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
+    implementation 'com.google.firebase:firebase-database:20.0.2'
 
 
         // Import the BoM for the Firebase platform
