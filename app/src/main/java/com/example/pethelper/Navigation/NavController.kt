@@ -17,9 +17,8 @@ fun SetNavController(controller: NavHostController) {
             StartScreen(controller)
         }
         composable(NavScreens.LoginScreen.route){
-            LoginScreen(controller, onLogin = {
-                username, password ->
-            })
+            val loginViewModel = viewModel<LoginViewModel>()
+            LoginScreen(viewModel = loginViewModel, controller)
         }
 
         composable(NavScreens.RegisterScreen.route){

@@ -45,6 +45,7 @@ import com.google.firebase.ktx.Firebase
 import java.sql.Date
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.style.TextAlign
 
 
 class MainActivity : ComponentActivity() {
@@ -104,84 +105,89 @@ fun StartScreen(controller: NavController){
 
 @Composable
 fun LoginScreen(
+    viewModel: LoginViewModel,
     controller: NavController,
-    onLogin: (username: String, password: String) -> Unit,
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val errorState = remember { mutableStateOf(false) }
+    val email by viewModel.email.observeAsState("")
+    val password by viewModel.password.observeAsState("")
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Bisque2),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Login",
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        TextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") }
-        )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
+        Text(text = "Login Screen")
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = email,
+            onValueChange = { viewModel.onEmailChange(it) },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation()
+            modifier = Modifier.fillMaxWidth()
         )
-
-        if (errorState.value) {
-            Text(
-                text = "Incorrect username or password",
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.error
-            )
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(modifier = Modifier
-            .width(250.dp)
-            .height(50.dp)
-            .clip(
-                RoundedCornerShape(25.dp)
-            ),colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4),
-            onClick = {
-                if (username == "admin" && password == "password") {
-                    onLogin(username, password)
-                    controller.navigate(NavScreens.MainScreen.route)
-                } else {
-                    errorState.value = true
-                }
-            }
+        Button(
+            onClick = { viewModel.login(controller) },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Login" , color = Color.White, fontSize = 20.sp)
+            Text("Login")
         }
-        Button(modifier = Modifier
-            .padding(top = 10.dp)
-            .width(250.dp)
-            .height(50.dp)
-            .clip(
-                RoundedCornerShape(25.dp)
-            ),colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4), onClick = {
-            controller.navigate(NavScreens.LoginScreen.route)
-        }){
-            Text(text = "Back" , color = Color.White, fontSize = 20.sp)
+        if (viewModel.error.value.isNotEmpty()) {
+            Text(
+                text = viewModel.error.value,
+                color = Color.Red,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            )
         }
     }
 }
+
+class LoginViewModel : ViewModel() {
+    private val _email = MutableLiveData("")
+    val email: LiveData<String> = _email
+
+    private val _password = MutableLiveData("")
+    val password: LiveData<String> = _password
+
+    val error = mutableStateOf("")
+
+    fun onEmailChange(email: String) {
+        _email.value = email
+    }
+
+    fun onPasswordChange(password: String) {
+        _password.value = password
+    }
+
+    fun login(controller: NavController) {
+        val email = email.value ?: return
+        val password = password.value ?: return
+
+
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    controller.navigate(NavScreens.MainScreen.route)
+                } else {
+                    error.value = "Incorrect email or password"
+                }
+            }
+    }
+}
+
 
 @Composable
 fun RegisterScreen(
@@ -241,6 +247,7 @@ class RegisterViewModel : ViewModel() {
     fun register(controller: NavController) {
         val email = email.value ?: return
         val password = password.value ?: return
+
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
