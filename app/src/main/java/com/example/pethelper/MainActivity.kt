@@ -1,6 +1,7 @@
 package com.example.pethelper
 
 import android.os.Bundle
+import android.text.style.ClickableSpan
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -45,7 +47,9 @@ import com.google.firebase.ktx.Firebase
 import java.sql.Date
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
 
 
 class MainActivity : ComponentActivity() {
@@ -73,7 +77,7 @@ fun StartScreen(controller: NavController){
     ) {
         auth = Firebase.auth
         Text(
-            text = "ВетСити",
+            text = "PETHELPER",
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -115,6 +119,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Bisque2)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -132,14 +137,16 @@ fun LoginScreen(
             value = password,
             onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { viewModel.login(controller) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4)
         ) {
-            Text("Login")
+            Text(text = "Войти", color = Color.White, fontSize = 20.sp)
         }
         if (viewModel.error.value.isNotEmpty()) {
             Text(
@@ -200,6 +207,7 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Bisque2)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -217,6 +225,7 @@ fun RegisterScreen(
             value = password,
             onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -224,7 +233,7 @@ fun RegisterScreen(
             onClick = { viewModel.register(controller) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Register")
+            Text("Зарегистрироваться", color = Color.White, fontSize = 20.sp)
         }
     }
 }
@@ -264,7 +273,7 @@ fun MainScreen(controller: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "ВетСити") }
+                title = { Text(text = "PETHELPER") }
             )
         },
         bottomBar = {
@@ -328,72 +337,273 @@ fun DoctorList() {
             }
         }
     }
+
 }
 
 
 @Composable
 fun OrderScreen(controller: NavController) {
+    Scaffold(bottomBar = {
+        BottomNavigation {
+            BottomNavigationItem(
+                selected = true,
+                onClick = { controller.navigate(NavScreens.OrderScreen.route)},
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Записаться на прием") },
+                label = { Text("Записаться на прием") }
+            )
 
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.CatalogScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Каталог товаров") },
+                label = { Text("Каталог товаров") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.PetsScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Мои питомцы") },
+                label = { Text("Мои питомцы") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.ProfileScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Профиль") },
+                label = { Text("Профиль") }
+            )
+        }
+    }, content = {padding ->
+        Column(modifier = Modifier.padding(16.dp)){ } })
+    
 }
 
 @Composable
 fun CatalogScreen(controller: NavController){
+    Scaffold(bottomBar = {
+        BottomNavigation {
+            BottomNavigationItem(
+                selected = true,
+                onClick = { controller.navigate(NavScreens.OrderScreen.route)},
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Записаться на прием") },
+                label = { Text("Записаться на прием") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.CatalogScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Каталог товаров") },
+                label = { Text("Каталог товаров") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.PetsScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Мои питомцы") },
+                label = { Text("Мои питомцы") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.ProfileScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Профиль") },
+                label = { Text("Профиль") }
+            )
+        }
+    }, content = {padding ->
+        Column(modifier = Modifier.padding(16.dp)){ } })
 
 }
 @Composable
 fun PetsScreen(controller: NavController) {
-    // Список питомцев
-    val pets = remember { mutableStateListOf<String>() }
-    // Имя нового питомца
-    var newPetName by remember { mutableStateOf("") }
+    val items = remember { mutableStateListOf<Item>() }
+    var isDialogOpen by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Мои питомцы") }
-            )
-        },
-        floatingActionButton = {
+    Column {
+
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Text(text = "Мои питомцы",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(end = 130.dp, top = 10.dp)
+        )
             FloatingActionButton(
-                onClick = {
-                    if (newPetName.isNotBlank()) {
-                        pets.add(newPetName)
-                        newPetName = ""
-                    }
-                }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить питомца")
-            }
-        },
-        content = { padding ->
-            Column(
+                onClick = { isDialogOpen = true },
+                backgroundColor = Color.Blue,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+                    .size(42.dp)
             ) {
-                // Список питомцев
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(pets) { pet ->
-                        Text(text = pet)
-                    }
-                }
-                // Форма добавления нового питомца
-                TextField(
-                    value = newPetName,
-                    onValueChange = { newPetName = it },
-                    label = { Text(text = "Введите имя питомца") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    tint = Color.White,
+                    modifier = Modifier.size(42.dp)
                 )
             }
         }
-    )
+
+
+
+        LazyColumn {
+            items(items) { item ->
+                Text(item.name, fontWeight = FontWeight.Bold, modifier = Modifier.clickable{ isDialogOpen = true })
+                Text(item.type, modifier = Modifier.clickable{ isDialogOpen = true })
+                Divider()
+            }
+        }
+
+        if (isDialogOpen) {
+            AddItemDialog(
+                onAddItem = { type, breed, name, age, gender, description ->
+                    items.add(Item(type, breed, name, age, gender, description))
+                },
+                onDismiss = { isDialogOpen = false }
+            )
+        }
+    }
 }
+
 @Composable
-fun ProfileScreen() {
+fun AddItemDialog(
+    onAddItem: (String, String, String, String, String, String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var type by remember { mutableStateOf("") }
+    var breed by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Добавить питомца",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = type,
+                onValueChange = { type = it },
+                label = { Text("Тип") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = breed,
+                onValueChange = { breed = it },
+                label = { Text("Порода") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Имя") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = age,
+                onValueChange = { age = it },
+                label = { Text("Возраст") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+            OutlinedTextField(
+                value = gender,
+                onValueChange = { gender = it },
+                label = { Text("Пол") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Описание") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+                TextButton(
+                    onClick = {
+                        onAddItem(type, breed, name, age, gender, description)
+                        onDismiss()
+                    }
+                ) {
+                    Text("Save")
+                }
+            }
+        }
+    }
+}
+
+data class Item(val type: String, val breed: String, val name: String, val age: String, val gender: String, val descripton: String)
+
+
+
+@Composable
+fun ProfileScreen(controller: NavController) {
+    Scaffold(bottomBar = {
+        BottomNavigation {
+            BottomNavigationItem(
+                selected = true,
+                onClick = { controller.navigate(NavScreens.OrderScreen.route)},
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Записаться на прием") },
+                label = { Text("Записаться на прием") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.CatalogScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Каталог товаров") },
+                label = { Text("Каталог товаров") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.PetsScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Мои питомцы") },
+                label = { Text("Мои питомцы") }
+            )
+
+            BottomNavigationItem(
+                selected = false,
+                onClick = { controller.navigate(NavScreens.ProfileScreen.route) },
+                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Профиль") },
+                label = { Text("Профиль") }
+            )
+        }
+    }, content = {padding ->
+        Column(modifier = Modifier.padding(16.dp)){ } })
 
 }
 

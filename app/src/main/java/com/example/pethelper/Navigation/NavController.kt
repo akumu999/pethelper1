@@ -39,7 +39,7 @@ fun SetNavController(controller: NavHostController) {
             PetsScreen(controller)
         }
         composable(NavScreens.ProfileScreen.route){
-            ProfileScreen()
+            ProfileScreen(controller)
         }
     }
 }
