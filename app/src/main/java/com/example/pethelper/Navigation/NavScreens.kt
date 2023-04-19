@@ -5,7 +5,7 @@ sealed class NavScreens (val route: String){
     object StartScreen : NavScreens("StartScreen")
     object LoginScreen : NavScreens("LoginScreen")
     object RegisterScreen : NavScreens("RegisterScreen")
-    object MainScreen : NavScreens("MainScreen")
+    object DoctorScreen : NavScreens("DoctorScreen")
     object OrderScreen : NavScreens("OrderScreen")
     object CatalogScreen : NavScreens("CatalogScreen")
     object PetsScreen : NavScreens("PetsScreen")
