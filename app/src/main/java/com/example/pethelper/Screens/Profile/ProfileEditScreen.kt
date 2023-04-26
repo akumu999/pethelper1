@@ -1,29 +1,28 @@
-package com.example.pethelper.Screens.Profile
+package com.example.pethelper.Screens
 
-
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
-import com.example.pethelper.R
+import com.example.pethelper.Screens.Profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun ProfileScreen(controller: NavController) {
+fun ProfileEditScreen(controller: NavController) {
     val user = remember { FirebaseAuth.getInstance().currentUser }
     val db = Firebase.firestore
     val userRef = db.collection("users").document(user!!.uid)
@@ -46,23 +45,35 @@ fun ProfileScreen(controller: NavController) {
         .fillMaxSize()
         .padding(16.dp)) {
 
-
-        Text(
-            text = name,
+        IconButton(onClick = { controller.navigate(NavScreens.ProfileScreen.route) }) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back button"
+            )
+        }
+        TextField(
+            value = name,
+            onValueChange = {name = it},
+            label = {Text(text="Name")},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
         )
 
-        Text(
-            text = age,
+        TextField(
+            value = age,
+            onValueChange = { age = it },
+            label = { Text(text = "Age") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
         )
 
-        Text(
-            text = bio,
+        TextField(
+            value = bio,
+            onValueChange = { bio = it },
+            label = { Text(text = "Bio") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -84,7 +95,7 @@ fun ProfileScreen(controller: NavController) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(text = "Изменить профиль")
+            Text(text = "Сохранить")
         }
     }
 }

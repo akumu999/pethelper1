@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import com.example.pethelper.Screens.*
 import com.example.pethelper.Screens.Doctors.DoctorScreen
 import com.example.pethelper.Screens.Login.LoginViewModel
+import com.example.pethelper.Screens.Profile.ProfileScreen
 import com.example.pethelper.Screens.Profile.ProfileViewModel
 import com.example.pethelper.Screens.Register.RegisterScreen
 import com.example.pethelper.Screens.Register.RegisterViewModel
@@ -38,8 +39,10 @@ fun SetNavController(controller: NavHostController, context : Context) {
             PetsScreen(controller)
         }
         composable(NavScreens.ProfileScreen.route){
-            val profileViewModel = viewModel<ProfileViewModel>()
-            ProfileScreen(controller, viewModel= profileViewModel, onBackClick = {})
+            ProfileScreen(controller)
+        }
+        composable(NavScreens.ProfileEditScreen.route){
+            ProfileEditScreen(controller)
         }
     }
 }
