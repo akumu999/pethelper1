@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
 import com.example.pethelper.Screens.Profile.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -79,17 +80,19 @@ fun ProfileEditScreen(controller: NavController) {
                 .padding(16.dp),
         )
 
+
+        val data = mapOf(
+            "name" to name,
+            "age" to age,
+            "bio" to bio,
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+
+
         Button(
             onClick = {
                 controller.navigate(NavScreens.ProfileEditScreen.route)
-                userRef.update(
-                    mapOf(
-                        "name" to name,
-                        "age" to age,
-                        "bio" to bio,
-                        "updatedAt" to FieldValue.serverTimestamp()
-                    )
-                )
+                userRef.set(data)
             },
             modifier = Modifier
                 .fillMaxWidth()

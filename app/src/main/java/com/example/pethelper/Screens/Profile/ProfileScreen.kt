@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
 import com.example.pethelper.R
@@ -27,6 +28,7 @@ fun ProfileScreen(controller: NavController) {
     val user = remember { FirebaseAuth.getInstance().currentUser }
     val db = Firebase.firestore
     val userRef = db.collection("users").document(user!!.uid)
+
 
     var name by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
