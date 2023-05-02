@@ -42,7 +42,7 @@ class LoginViewModel : ViewModel() {
                     saveSessionAfterLogin(context, controller)
                     controller.navigate(NavScreens.DoctorScreen.route)
                 } else {
-                    error.value = "Incorrect email or password"
+                    error.value = "Неверный E-mail или пароль"
                 }
             }
     }

@@ -8,6 +8,8 @@ sealed class NavScreens (val route: String){
     object DoctorScreen : NavScreens("DoctorScreen")
     object CatalogScreen : NavScreens("CatalogScreen")
     object PetsScreen : NavScreens("PetsScreen")
+    object PetsAddScreen : NavScreens("PetsAddScreen")
     object ProfileScreen : NavScreens("ProfileScreen")
     object ProfileEditScreen : NavScreens("EditProfile")
+    object PetProfile : NavScreens("PetProfile")
 }

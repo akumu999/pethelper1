@@ -41,13 +41,13 @@ fun StartScreen(controller: NavController){
         )
         Button(colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4), onClick = {
             controller.navigate(NavScreens.LoginScreen.route)
-        }, modifier = Modifier
+        },  modifier = Modifier
             .padding(top = 400.dp)
             .width(250.dp)
             .height(50.dp)
             .clip(
                 RoundedCornerShape(25.dp)
-            )){
+            ), elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 16.dp)){
             Text(text = "Войти", color = Color.White, fontSize = 20.sp)
         }
         Button(modifier = Modifier
@@ -56,7 +56,7 @@ fun StartScreen(controller: NavController){
             .height(50.dp)
             .clip(
                 RoundedCornerShape(25.dp)
-            ),colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4),onClick = {
+            ),colors = ButtonDefaults.buttonColors(backgroundColor = Bisque4), elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 16.dp),onClick = {
             controller.navigate(NavScreens.RegisterScreen.route)
         }){
             Text(text = "Регистрация", color = Color.White, fontSize = 20.sp)

@@ -25,6 +25,7 @@ fun RegisterScreen(
     val email by viewModel.email.observeAsState("")
     val password by viewModel.password.observeAsState("")
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,19 +34,19 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Register Screen")
+        Text(text = "Регистрация")
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
             onValueChange = { viewModel.onEmailChange(it) },
-            label = { Text("Email") },
+            label = { Text("E-mail") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { viewModel.onPasswordChange(it) },
-            label = { Text("Password") },
+            label = { Text("Пароль") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )

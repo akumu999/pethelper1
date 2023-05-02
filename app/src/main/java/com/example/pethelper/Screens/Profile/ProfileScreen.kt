@@ -2,11 +2,11 @@ package com.example.pethelper.Screens.Profile
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
 import com.example.pethelper.R
+import com.example.pethelper.ui.theme.Bisque1
+import com.example.pethelper.ui.theme.Bisque2
+import com.example.pethelper.ui.theme.Bisque4
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
@@ -31,6 +34,7 @@ fun ProfileScreen(controller: NavController) {
 
 
     var name by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
 
@@ -38,55 +42,62 @@ fun ProfileScreen(controller: NavController) {
         userRef.get().addOnSuccessListener { document ->
             if (document != null) {
                 name = document.getString("name") ?: ""
+                surname = document.getString("surname") ?: ""
                 age = document.getString("age") ?: ""
                 bio = document.getString("bio") ?: ""
             }
         }
     }
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().background(Bisque2)) {
 
 
-        Text(
-            text = name,
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-        )
-
-        Text(
-            text = age,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        )
-
-        Text(
-            text = bio,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        )
-
-        Button(
-            onClick = {
-                controller.navigate(NavScreens.ProfileEditScreen.route)
-                userRef.update(
-                    mapOf(
-                        "name" to name,
-                        "age" to age,
-                        "bio" to bio,
-                        "updatedAt" to FieldValue.serverTimestamp()
+                .padding(vertical = 8.dp)
+                .clickable {
+                    controller.navigate(NavScreens.ProfileEditScreen.route)
+                    userRef.update(
+                        mapOf(
+                            "name" to name,
+                            "age" to age,
+                            "bio" to bio,
+                            "updatedAt" to FieldValue.serverTimestamp()
+                        )
                     )
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                },
+            elevation = 4.dp,
         ) {
-            Text(text = "Изменить профиль")
+            Column() {
+
+                Text(
+                    text = "Имя: " + name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                )
+
+                Text(
+                    text = "Фамилия: " + surname,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                )
+
+                Text(
+                    text = "Возраст: " + age,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                )
+
+                Text(
+                    text = "О себе: " + bio,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                )
+            }
         }
     }
 }

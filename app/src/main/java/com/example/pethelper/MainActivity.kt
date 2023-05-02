@@ -1,5 +1,6 @@
 package com.example.pethelper
 
+import TopNav
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
@@ -55,7 +56,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.Navigation
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pethelper.Screens.BottomNav
-import com.example.pethelper.Screens.TopNav
 
 
 class MainActivity : ComponentActivity() {

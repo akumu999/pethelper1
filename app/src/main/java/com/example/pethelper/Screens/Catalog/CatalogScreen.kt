@@ -1,5 +1,6 @@
 package com.example.pethelper.Screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
 import com.example.pethelper.Screens.Catalog.CatalogList
+import com.example.pethelper.ui.theme.Bisque2
 
 @Composable
 fun CatalogScreen(controller: NavController) {
-    Column(modifier = Modifier.padding(16.dp)){ CatalogList() } }
+    Column(modifier = Modifier.background(Bisque2).padding(16.dp)){ CatalogList() } }
