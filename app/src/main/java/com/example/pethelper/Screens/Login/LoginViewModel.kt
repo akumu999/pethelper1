@@ -11,6 +11,7 @@ import com.example.pethelper.common.Consts
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
+
     private val _email = MutableLiveData("")
     val email: LiveData<String> = _email
 
@@ -18,6 +19,8 @@ class LoginViewModel : ViewModel() {
     val password: LiveData<String> = _password
 
     val error = mutableStateOf("")
+
+
 
     fun onEmailChange(email: String) {
         _email.value = email
@@ -33,9 +36,10 @@ class LoginViewModel : ViewModel() {
 
 
 
+
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
+                if (task.isSuccessful ) {
                     saveTokenToPrefs(context, token = Consts.TOKEN_KEY)
                     getTokenFromPrefs(context)
                     checkAuth(context, controller)
@@ -46,6 +50,8 @@ class LoginViewModel : ViewModel() {
                 }
             }
     }
+
+
     // Функция сохранения токена в SharedPreferences
     fun saveTokenToPrefs(context: Context, token: String) {
         val prefs = context.getSharedPreferences(Consts.PREFS_NAME, Context.MODE_PRIVATE)

@@ -78,7 +78,7 @@ fun PetsScreen(controller: NavController) {
             items(pets) { pet ->
                 Card(
                     modifier = Modifier.fillMaxSize().padding(vertical = 8.dp, horizontal = 16.dp)
-                        .clickable { controller.navigate(NavScreens.PetProfile.route + "/${pet.id}") })
+                        .clickable { controller.navigate(NavScreens.PetProfile.route)   })
                 {
                     Column(
                         modifier = Modifier

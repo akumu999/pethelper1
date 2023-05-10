@@ -9,7 +9,6 @@ import androidx.navigation.NavController
 import com.example.pethelper.ui.theme.Bisque2
 import com.example.pethelper.ui.theme.Bisque4
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 

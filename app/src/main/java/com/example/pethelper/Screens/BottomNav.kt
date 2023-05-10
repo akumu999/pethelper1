@@ -37,7 +37,7 @@ fun BottomNav(controller: NavController){
             selected = false,
             onClick = { controller.navigate(NavScreens.CatalogScreen.route) },
             icon = { Icon(painter = painterResource(id = R.drawable.catalog), contentDescription = "Каталог товаров", modifier = Modifier.size(28.dp)) },
-            label = { Text("Товары") }
+            label = { Text("Услуги") }
         )
 
         BottomNavigationItem(

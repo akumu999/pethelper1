@@ -10,7 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import com.example.pethelper.Screens.*
-import com.example.pethelper.Screens.Doctors.DoctorScreen
+import com.example.pethelper.Screens.Admin.AdminMainScreen
+import com.example.pethelper.Screens.Catalog.ProductInfo
+import com.example.pethelper.Screens.Doctors.Veterinarian
 import com.example.pethelper.Screens.Login.LoginViewModel
 import com.example.pethelper.Screens.Profile.ProfileScreen
 import com.example.pethelper.Screens.Register.RegisterScreen
@@ -42,7 +44,7 @@ fun SetNavController(controller: NavHostController, context : Context) {
             PetsScreen(controller)
         }
 
-        composable(NavScreens.PetProfile.route + "/{petId}") { backStackEntry ->
+        composable(NavScreens.PetProfile.route) {
             PetProfile(pet = Pet(), controller)
         }
 
@@ -55,6 +57,12 @@ fun SetNavController(controller: NavHostController, context : Context) {
         }
         composable(NavScreens.ProfileEditScreen.route) {
             ProfileEditScreen(controller)
+        }
+        composable(NavScreens.ProductInfo.route) {
+            ProductInfo(controller)
+        }
+        composable(NavScreens.AdminMainScreen.route) {
+            AdminMainScreen(controller)
         }
     }
 }

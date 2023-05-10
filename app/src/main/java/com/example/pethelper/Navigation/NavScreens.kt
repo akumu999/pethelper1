@@ -12,4 +12,6 @@ sealed class NavScreens (val route: String){
     object ProfileScreen : NavScreens("ProfileScreen")
     object ProfileEditScreen : NavScreens("EditProfile")
     object PetProfile : NavScreens("PetProfile")
+    object ProductInfo : NavScreens("ProductInfo")
+    object AdminMainScreen : NavScreens("AdminMainScreen")
 }

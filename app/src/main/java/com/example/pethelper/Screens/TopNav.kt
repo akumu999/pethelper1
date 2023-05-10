@@ -22,14 +22,8 @@ fun TopNav() {
         actions = {
             IconButton(onClick = {}) {
                 Icon(modifier = Modifier.size(28.dp),
-                    painter = painterResource(id = R.drawable.shpping_cart),
-                    contentDescription = "Cart"
-                )
-            }
-            IconButton(onClick = {}) {
-                Icon( modifier = Modifier.size(28.dp),
-                    painter = painterResource(id = R.drawable.settings),
-                    contentDescription = "Settings"
+                    painter = painterResource(id = R.drawable.search),
+                    contentDescription = "Search"
                 )
             }
         }, elevation = 8.dp,
