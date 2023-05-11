@@ -19,7 +19,6 @@ import com.example.pethelper.Screens.Register.RegisterScreen
 import com.example.pethelper.Screens.Register.RegisterViewModel
 
 
-
 @Composable
 fun SetNavController(controller: NavHostController, context : Context) {
     NavHost(navController = controller, startDestination = NavScreens.StartScreen.route) {
@@ -44,9 +43,10 @@ fun SetNavController(controller: NavHostController, context : Context) {
             PetsScreen(controller)
         }
 
-        composable(NavScreens.PetProfile.route) {
-            PetProfile(pet = Pet(), controller)
+        composable(NavScreens.PetProfile.route + "/{pet.id}") { backStackEntry ->
+            PetProfile(petId = backStackEntry.arguments?.getString("pet.id") ?: "", controller = controller)
         }
+
 
 
         composable(NavScreens.PetsAddScreen.route) {

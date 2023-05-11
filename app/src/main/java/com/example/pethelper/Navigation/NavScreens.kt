@@ -1,5 +1,6 @@
 package com.example.pethelper.Navigation
 
+
 sealed class NavScreens (val route: String){
 
     object StartScreen : NavScreens("StartScreen")

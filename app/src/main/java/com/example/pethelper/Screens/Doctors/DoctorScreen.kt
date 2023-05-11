@@ -13,12 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
+import com.example.pethelper.R
 import com.example.pethelper.Screens.Doctors.Veterinarian
+import com.example.pethelper.ui.theme.Bisque1
 import com.example.pethelper.ui.theme.Bisque2
 import com.example.pethelper.ui.theme.Bisque4
 import com.google.firebase.auth.FirebaseAuth
@@ -48,7 +52,19 @@ fun DoctorScreen(controller: NavController) {
         veterinarians = querySnapshot.toObjects<Veterinarian>()
     }
 
+
+    // Хранит значение для поиска
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Отфильтрованный список товаров
+    val filteredVeterinarian= if (searchQuery.isEmpty()) {
+        veterinarians
+    } else {
+        veterinarians.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
     Column {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,15 +74,49 @@ fun DoctorScreen(controller: NavController) {
             Text(
                 text = "Специалисты",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(end = 130.dp, top = 10.dp)
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center).padding(8.dp)
             )
         }
+
+        TopAppBar(
+            title = { Text(text = "PETHELPER", textAlign = TextAlign.Center) },
+            backgroundColor = Bisque1,
+            elevation = 8.dp,
+            actions = {
+                // TextField для поиска
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .fillMaxWidth()
+                        .size(28.dp),
+                    placeholder = { Text(text = "Поиск") },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.body1.copy(color = Color.Black),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Bisque4,
+                        cursorColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.search),
+                            contentDescription = "Search"
+                        )
+                    }
+                )
+            }
+        )
 
         // Отображаем список Ветеринаров в LazyColumn
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .background(Bisque2)) {
-            items(veterinarians) { veterinarian ->
+            items(filteredVeterinarian) { veterinarian ->
                 Card(
                     modifier = Modifier
                         .fillMaxSize()

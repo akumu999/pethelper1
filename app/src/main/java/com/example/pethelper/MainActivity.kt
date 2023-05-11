@@ -53,13 +53,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.Navigation
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pethelper.Screens.BottomNav
+import com.example.pethelper.Screens.LoginScreen
+import com.example.pethelper.common.Consts
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -79,7 +82,6 @@ fun RootScreen(context: Context){
     val navController = rememberNavController()
     var showBottomBar by remember { mutableStateOf(true)}
     var showTopBar by remember { mutableStateOf(true)}
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     showBottomBar = when (navBackStackEntry?.destination?.route){
         NavScreens.DoctorScreen.route,
@@ -89,10 +91,10 @@ fun RootScreen(context: Context){
         else -> false
     }
     showTopBar = when (navBackStackEntry?.destination?.route){
-        NavScreens.DoctorScreen.route,
-        NavScreens.CatalogScreen.route,
-        NavScreens.PetsScreen.route,
-        NavScreens.ProfileScreen.route -> true
+        /*NavScreens.DoctorScreen.route,*/
+       /* NavScreens.CatalogScreen.route,*/
+        /*NavScreens.PetsScreen.route,*/
+        /*NavScreens.ProfileScreen.route*/ /*-> true*/
         else -> false
     }
     Scaffold(
@@ -102,6 +104,8 @@ fun RootScreen(context: Context){
         SetNavController(controller = navController, context)
     }
 }
+
+
 
 @Composable
 fun MyApp(content: @Composable () -> Unit) {

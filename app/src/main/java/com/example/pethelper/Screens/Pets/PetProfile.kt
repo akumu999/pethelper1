@@ -1,5 +1,6 @@
 import androidx.compose.runtime.*
 import Pet
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -17,17 +18,40 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
+
 @Composable
-fun PetProfile(pet: Pet, controller: NavController) {
-    var name by remember { mutableStateOf(pet.name) }
-    var type by remember { mutableStateOf(pet.type) }
-    var breed by remember { mutableStateOf(pet.breed) }
-    var gender by remember { mutableStateOf(pet.gender) }
-    var age by remember { mutableStateOf(pet.age) }
-    var description by remember { mutableStateOf(pet.description) }
-    val db = FirebaseFirestore.getInstance()
+fun PetProfile(petId: String, controller: NavController) {
+    var id by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
+    var breed by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+
+    val db = Firebase.firestore
     val user = FirebaseAuth.getInstance().currentUser
-    val petRef = db.collection("users").document(user!!.uid).collection("pets").document(pet.id)
+    val petRef = db.collection("users").document(user!!.uid).collection("pets").document(petId)
+
+
+
+    LaunchedEffect(Unit) {
+        // Получите данные о питомце из Firebase Firestore
+        val petSnapshot = petRef.get().await()
+        if (petSnapshot.exists()) {
+            // Если документ существует, получите данные
+            val petData = petSnapshot.data
+            id = petData?.get("id") as? String ?: ""
+            name = petData?.get("name") as? String ?: ""
+            type = petData?.get("type") as? String ?: ""
+            breed = petData?.get("breed") as? String ?: ""
+            gender = petData?.get("gender") as? String ?: ""
+            age = petData?.get("age") as? String ?: ""
+            description = petData?.get("description") as? String ?: ""
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -79,6 +103,7 @@ fun PetProfile(pet: Pet, controller: NavController) {
                 Button(
                     onClick = {
                         val petData = hashMapOf(
+                            "id" to id,
                             "name" to name,
                             "type" to type,
                             "breed" to breed,
@@ -92,6 +117,15 @@ fun PetProfile(pet: Pet, controller: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "Сохранить изменения") }
+                Button(onClick = { petRef.delete().addOnCompleteListener{
+                    task -> if(task.isSuccessful){
+                        controller.navigate(NavScreens.PetsScreen.route)
+                } else {
+                    
+                }
+                }}, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Удалить питомца")
+                }
     }
 }
 

@@ -13,14 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
+import com.example.pethelper.R
 import com.example.pethelper.Screens.Catalog.product
 import com.example.pethelper.Screens.Doctors.Veterinarian
+import com.example.pethelper.ui.theme.Bisque1
 import com.example.pethelper.ui.theme.Bisque2
+import com.example.pethelper.ui.theme.Bisque4
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,6 +45,18 @@ fun CatalogScreen(controller: NavController) {
     // Хранит список товаров текущего пользователя
     var products by remember { mutableStateOf<List<product>>(emptyList()) }
 
+
+    // Хранит значение для поиска
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Отфильтрованный список товаров
+    val filteredProducts = if (searchQuery.isEmpty()) {
+        products
+    } else {
+        products.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
+
     // Получаем список товаров из Firestore
     LaunchedEffect(user?.uid) {
         val querySnapshot = db.collection("products")
@@ -57,24 +74,62 @@ fun CatalogScreen(controller: NavController) {
                 text = "Прайс-лист на услуги",
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(end = 100.dp, top = 10.dp)
+                fontSize = 24.sp,
+                modifier = Modifier.align(Alignment.Center).padding(8.dp)
             )
         }
 
-        // Отображаем список товаров в LazyColumn
-        LazyColumn(modifier = Modifier.fillMaxSize().background(Bisque2).padding(bottom = 50.dp)) {
-            items(products) { product ->
-                Card(
-                    modifier = Modifier.fillMaxSize().padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-                {
-                    Column(
+        Column {
+            TopAppBar(
+                title = { Text(text = "PETHELPER", textAlign = TextAlign.Center) },
+                backgroundColor = Bisque1,
+                elevation = 8.dp,
+                actions = {
+                    // TextField для поиска
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
                         modifier = Modifier
-                            .fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp)
+                            .padding(end = 16.dp)
+                            .fillMaxWidth()
+                            .size(28.dp),
+                        placeholder = { Text(text = "Поиск") },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.body1.copy(color = Color.Black),
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Bisque4,
+                            cursorColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.search),
+                                contentDescription = "Search"
+                            )
+                        }
+                    )
+                }
+            )
 
-                    ) {
-                        Text(text = product.name, fontWeight = FontWeight.Bold)
-                        Text(text = "Цена: "+product.cost)
+            // Отображаем список товаров в LazyColumn
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().background(Bisque2).padding(bottom = 50.dp)
+            ) {
+                items(filteredProducts) { product ->
+                    Card(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                    {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp)
+
+                        ) {
+                            Text(text = product.name, fontWeight = FontWeight.Bold)
+                            Text(text = "Цена: " + product.cost)
+                        }
                     }
                 }
             }

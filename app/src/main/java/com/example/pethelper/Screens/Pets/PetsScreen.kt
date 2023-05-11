@@ -13,11 +13,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
+import com.example.pethelper.R
+import com.example.pethelper.ui.theme.Bisque1
 import com.example.pethelper.ui.theme.Bisque2
+import com.example.pethelper.ui.theme.Bisque4
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -37,6 +43,16 @@ fun PetsScreen(controller: NavController) {
     // Хранит список питомцев текущего пользователя
     var pets by remember { mutableStateOf<List<Pet>>(emptyList()) }
 
+    // Хранит значение для поиска
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Отфильтрованный список товаров
+    val filtredPets = if (searchQuery.isEmpty()) {
+        pets
+    } else {
+        pets.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
     // Получаем список питомцев из Firestore
     LaunchedEffect(user?.uid) {
         val querySnapshot = db.collection("users")
@@ -55,31 +71,66 @@ fun PetsScreen(controller: NavController) {
             Text(
                 text = "Мои питомцы",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(end = 130.dp, top = 10.dp)
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center).padding(8.dp)
             )
             FloatingActionButton(
                 onClick = { controller.navigate(NavScreens.PetsAddScreen.route) },
                 backgroundColor = Color.Blue,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(42.dp)
+                    .size(40.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
                     tint = Color.White,
-                    modifier = Modifier.size(42.dp).background(Color.Green)
+                    modifier = Modifier.size(400.dp).background(Color.Green)
                 )
             }
         }
 
+        TopAppBar(
+            title = { Text(text = "PETHELPER", textAlign = TextAlign.Center) },
+            backgroundColor = Bisque1,
+            elevation = 8.dp,
+            actions = {
+                // TextField для поиска
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .fillMaxWidth()
+                        .size(28.dp),
+                    placeholder = { Text(text = "Поиск") },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.body1.copy(color = Color.Black),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Bisque4,
+                        cursorColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.search),
+                            contentDescription = "Search"
+                        )
+                    }
+                )
+            }
+        )
+
         // Отображаем список питомцев в LazyColumn
         LazyColumn(modifier = Modifier.fillMaxSize().background(Bisque2)) {
-            items(pets) { pet ->
+            items(filtredPets) { pet ->
                 Card(
                     modifier = Modifier.fillMaxSize().padding(vertical = 8.dp, horizontal = 16.dp)
-                        .clickable { controller.navigate(NavScreens.PetProfile.route)   })
-                {
+                        .clickable { controller.navigate(NavScreens.PetProfile.route + "/${pet.id}") }
+                )
+                        {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp)

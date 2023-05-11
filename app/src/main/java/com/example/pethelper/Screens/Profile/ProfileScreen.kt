@@ -7,13 +7,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.pethelper.Navigation.NavScreens
@@ -50,7 +57,32 @@ fun ProfileScreen(controller: NavController) {
     }
     Column(modifier = Modifier.fillMaxSize().background(Bisque2)) {
 
-
+        Box(
+            modifier = Modifier.fillMaxWidth().background(Bisque2),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Text(
+                text = "Мой профиль",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center).padding(8.dp)
+            )
+            FloatingActionButton(
+                onClick = { controller.navigate(NavScreens.ProfileEditScreen.route) },
+                backgroundColor = Color.Blue,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Add",
+                    tint = Color.White,
+                    modifier = Modifier.size(400.dp).background(Color.Green)
+                )
+            }
+        }
         Card(
             modifier = Modifier
                 .fillMaxWidth()
